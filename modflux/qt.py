@@ -147,7 +147,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self._tableModel.refreshData()
 
     def contextMenu(self, position: QPoint):
-        index = self.table_view.indexAt(position)
+        index = self.tableMods.indexAt(position)
         if not index.isValid():
             return
 
@@ -169,7 +169,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         delete_action = menu.addAction("Delete")
         edit_tags = menu.addAction("Edit Tags")
 
-        action = menu.exec(self.table_view.viewport().mapToGlobal(position))
+        action = menu.exec(self.tableMods.viewport().mapToGlobal(position))
 
         if not action:
             return
