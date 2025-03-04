@@ -16,9 +16,10 @@ from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
     QIcon, QImage, QKeySequence, QLinearGradient,
     QPainter, QPalette, QPixmap, QRadialGradient,
     QTransform)
-from PySide6.QtWidgets import (QApplication, QHBoxLayout, QHeaderView, QMainWindow,
-    QMenu, QMenuBar, QPushButton, QSizePolicy,
-    QStatusBar, QTableView, QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QHBoxLayout, QHeaderView, QLineEdit,
+    QMainWindow, QMenu, QMenuBar, QPushButton,
+    QSizePolicy, QStatusBar, QTableView, QVBoxLayout,
+    QWidget)
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -31,11 +32,21 @@ class Ui_MainWindow(object):
         self.centralwidget.setObjectName(u"centralwidget")
         self.horizontalLayout = QHBoxLayout(self.centralwidget)
         self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.verticalLayout_2 = QVBoxLayout()
+        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.filterModList = QLineEdit(self.centralwidget)
+        self.filterModList.setObjectName(u"filterModList")
+
+        self.verticalLayout_2.addWidget(self.filterModList)
+
         self.tableMods = QTableView(self.centralwidget)
         self.tableMods.setObjectName(u"tableMods")
         self.tableMods.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
 
-        self.horizontalLayout.addWidget(self.tableMods)
+        self.verticalLayout_2.addWidget(self.tableMods)
+
+
+        self.horizontalLayout.addLayout(self.verticalLayout_2)
 
         self.verticalLayout = QVBoxLayout()
         self.verticalLayout.setObjectName(u"verticalLayout")
@@ -94,6 +105,7 @@ class Ui_MainWindow(object):
         self.buttonQuit.clicked.connect(MainWindow.quit)
         self.tableMods.doubleClicked.connect(MainWindow.handleTableDoubleClick)
         self.tableMods.customContextMenuRequested.connect(MainWindow.contextMenu)
+        self.filterModList.textEdited.connect(MainWindow.updateModListFilter)
 
         QMetaObject.connectSlotsByName(MainWindow)
     # setupUi
@@ -101,6 +113,7 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
         self.actionExit.setText(QCoreApplication.translate("MainWindow", u"Exit", None))
+        self.filterModList.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Filter...", None))
         self.buttonActivate.setText(QCoreApplication.translate("MainWindow", u"Activate", None))
         self.buttonDownload.setText(QCoreApplication.translate("MainWindow", u"Download", None))
         self.buttonImport.setText(QCoreApplication.translate("MainWindow", u"Import", None))

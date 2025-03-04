@@ -1,8 +1,29 @@
-from PySide6.QtCore import Qt, QAbstractTableModel, QModelIndex
+from PySide6.QtCore import Qt, QAbstractTableModel, QModelIndex, QSortFilterProxyModel
 from typing import List
 
 from modflux import mods
 from modflux.db import Mod, ModVersion, Game
+
+
+class ModTableFilterModel(QSortFilterProxyModel):
+    def __init__(self):
+        super().__init__()
+
+    def filterAcceptsRow(self, source_row, source_parent):
+        # Get the index for the column we want to filter on
+        nameIndex = self.sourceModel().index(source_row, 0, source_parent)
+        tagsIndex = self.sourceModel().index(source_row, 5, source_parent)
+
+        # Get the data for that cell
+        nameData = self.sourceModel().data(nameIndex, Qt.DisplayRole)
+        tagData = self.sourceModel().data(tagsIndex, Qt.DisplayRole)
+
+        # Check if it matches our filter pattern
+        pattern = self.filterRegularExpression().pattern().casefold()
+        if not pattern:
+            return True
+
+        return pattern in str(nameData).casefold() or pattern in str(tagData).casefold()
 
 
 class ModTableModel(QAbstractTableModel):

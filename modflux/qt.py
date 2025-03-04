@@ -24,7 +24,7 @@ from modflux import mods
 from modflux import config
 
 from modflux.models.games import GameListModel
-from modflux.models.mods import ModTableModel
+from modflux.models.mods import ModTableModel, ModTableFilterModel
 
 from modflux.ui.game_settings import Ui_GameSettings
 from modflux.ui.settings import Ui_Settings
@@ -46,7 +46,10 @@ class MainWindow(Ui_MainWindow, QMainWindow):
 
         # Setup table model data
         self._tableModel = ModTableModel()
-        self.tableMods.setModel(self._tableModel)
+        self._proxyModel = ModTableFilterModel()
+
+        self._proxyModel.setSourceModel(self._tableModel)
+        self.tableMods.setModel(self._proxyModel)
 
         # Tweak the table layout
         self.tableMods.setColumnWidth(0, 400)
@@ -57,7 +60,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         self.server.newConnection.connect(self.handleNewConnection)
 
         # Check to see if its a mount
-        if (mods.is_active()):
+        if mods.is_active():
             self.buttonActivate.setText("Deactivate")
 
         # Try to start server - if it fails, another instance exists
@@ -145,6 +148,10 @@ class MainWindow(Ui_MainWindow, QMainWindow):
     def refreshTableData(self):
         """Refresh the table model with latest data from database"""
         self._tableModel.refreshData()
+
+    def updateModListFilter(self, string: str):
+        self._proxyModel.setFilterRegularExpression(string)
+        pass
 
     def contextMenu(self, position: QPoint):
         index = self.tableMods.indexAt(position)
