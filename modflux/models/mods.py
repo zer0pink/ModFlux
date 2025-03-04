@@ -96,13 +96,13 @@ class ModTableModel(QAbstractTableModel):
 
         return False
 
-    def add_mod(self, mod: Mod):
+    def addMod(self, mod: Mod):
         """Add a new mod to the model"""
         self.beginInsertRows(QModelIndex(), len(self._data), len(self._data))
         self._data.append(mod)
         self.endInsertRows()
 
-    def update_mod(self, index: int, mod: Mod):
+    def updateMod(self, index: int, mod: Mod):
         """Update an existing mod in the model"""
         if 0 <= index < len(self._data):
             self._data[index] = mod
@@ -110,23 +110,23 @@ class ModTableModel(QAbstractTableModel):
                 self.index(index, 0), self.index(index, self.columnCount(None) - 1)
             )
 
-    def refresh_data(self):
+    def refreshData(self):
         """Refresh all data in the model"""
         self.beginResetModel()
         self._data = mods.get_game_mods()
         self.endResetModel()
 
-    def get_mod(self, index: int) -> Mod:
+    def getMod(self, index: int) -> Mod:
         """Get mod at specified index"""
         return self._data[index]
 
-    def remove_mod(self, index: int):
+    def removeMod(self, index: int):
         """Remove a mod from the model"""
         self.beginRemoveRows(QModelIndex(), index, index)
         self._data.pop(index)
         self.endRemoveRows()
 
-    def toggle_active(self, index: int):
+    def toggleActive(self, index: int):
         """Toggle the active state of a mod"""
         mod = self._data[index]
         mod.active = not mod.active
@@ -140,7 +140,7 @@ class ModTableModel(QAbstractTableModel):
             [Qt.DisplayRole],
         )
 
-    def update_load_orders(self, start_index: int, end_index: int):
+    def updateLoadOrders(self, start_index: int, end_index: int):
         """Update load orders for all mods between start and end index"""
         # Sort the affected mods by their current position in the model
         affected_mods = self._data[start_index : end_index + 1]
@@ -161,7 +161,7 @@ class ModTableModel(QAbstractTableModel):
             [Qt.DisplayRole],
         )
 
-    def move_mod_to_position(self, from_index: int, to_index: int):
+    def moveModToPosition(self, from_index: int, to_index: int):
         """Move a mod to a new position and update all affected load orders"""
         if from_index == to_index:
             return
@@ -181,4 +181,4 @@ class ModTableModel(QAbstractTableModel):
 
         # Update load orders in database and model
         start, end = min(from_index, to_index), max(from_index, to_index)
-        self.update_load_orders(start, end)
+        self.updateLoadOrders(start, end)

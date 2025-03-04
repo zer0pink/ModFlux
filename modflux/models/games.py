@@ -24,12 +24,12 @@ class GameListModel(QAbstractTableModel):
 
             return str(row_data.name)
 
-    def refresh_data(self):
+    def refreshData(self):
         """Refresh all data in the model"""
         self.beginResetModel()
         self._data = list(Game.select())
         self.endResetModel()
 
 
-    def get_game(self, row: int) -> Game:
+    def getGame(self, row: int) -> Game:
         return self._data[row]
