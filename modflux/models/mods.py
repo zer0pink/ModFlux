@@ -25,7 +25,6 @@ class ModTableFilterModel(QSortFilterProxyModel):
 
         return pattern in str(nameData).casefold() or pattern in str(tagData).casefold()
 
-
 class ModTableModel(QAbstractTableModel):
     def __init__(self):
         super().__init__()

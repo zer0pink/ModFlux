@@ -154,10 +154,13 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         pass
 
     def contextMenu(self, position: QPoint):
-        index = self.tableMods.indexAt(position)
-        if not index.isValid():
+        tableIndex = self.tableMods.indexAt(position)
+        if not tableIndex.isValid():
             return
 
+        # Map from proxy index
+        index = self._proxyModel.mapToSource(tableIndex)
+        
         mod = self._tableModel.getMod(index.row())
         menu = QMenu(self)
 
@@ -190,7 +193,17 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         elif action == delete_action:
             self.deleteMod(index.row())
         elif action == toggle_action:
-            self.toggleMod(index.row())
+            # Selection
+            selectedIndexes = self.tableMods.selectionModel().selectedIndexes()
+            logger.debug(selectedIndexes)
+            if selectedIndexes and len(selectedIndexes) > 1:
+                logger.debug("Got multiple mods selected")
+
+                for selected in selectedIndexes:
+                    index = self._proxyModel.mapToSource(selected)
+                    self.toggleMod(index.row())
+            else:
+                self.toggleMod(index.row())
         elif mod.nexus_mod_id and action == visit_nexus:
             self.visitModOnNexus(mod)
         elif action == edit_tags:
