@@ -200,20 +200,20 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         """Move a mod to a new position in the load order"""
         self._tableModel.moveModToPosition(from_index, to_index)
 
-    def editLoadOrder(self, mod: Mod, current_row: int):
+    def editLoadOrder(self, mod: Mod, currentRow: int):
         """Show dialog to manually edit load order"""
         max_order = len(self._tableModel._data) - 1
-        new_position, ok = QInputDialog.getInt(
+        newPosition, ok = QInputDialog.getInt(
             self,
             "Edit Load Order",
             f"Enter new position (0-{max_order}):",
-            current_row,
+            currentRow,
             0,
             max_order,
         )
 
-        if ok and new_position != current_row:
-            self.moveModToPosition(current_row, new_position)
+        if ok and newPosition != currentRow:
+            self.moveModToPosition(currentRow, newPosition)
 
     def deleteMod(self, row: int):
         mod = self._tableModel.getMod(row)
@@ -248,8 +248,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         dialog = TagDialog(mod, self)
         if dialog.exec() == QDialog.Accepted:
             # Get new tags and update mod
-            new_tags = dialog.get_tags()
-            mod.tags = ",".join(sorted(new_tags))
+            newTags = dialog.get_tags()
+            mod.tags = ",".join(sorted(newTags))
             mod.save()
 
             # Update the model
