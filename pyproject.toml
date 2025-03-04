@@ -1,0 +1,36 @@
+[project]
+name = "modflux"
+version = "0.1.0"
+description = ""
+authors = [{ name = "zer0pink", email = "me@zer0.pink" }]
+requires-python = ">=3.13,<3.14"
+readme = "README.md"
+dependencies = [
+    "pyside6>=6.8.2.1,<7",
+    "yaspin>=3.1.0,<4",
+    "rarfile~=4.2",
+    "peewee>=3.17.9,<4",
+    "requests>=2.32.3,<3",
+    "httpx>=0.28.1,<0.29",
+    "aiohttp>=3.11.12,<4",
+    "asyncio>=3.4.3,<4",
+    "sh>=2.2.1",
+    "pyyaml>=6.0.2",
+    "py7zr>=0.22.0",
+]
+
+[dependency-groups]
+dev = []
+
+[tool.hatch.build.targets.sdist]
+include = ["modflux", "migrations"]
+
+[tool.hatch.build.targets.wheel]
+include = ["modflux", "migrations"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project.scripts]
+modflux = "modflux.qt:app_main"
