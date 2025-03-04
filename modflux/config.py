@@ -48,14 +48,6 @@ CONFIG_FILE = CONFIG_DIR / "config.yml"
 
 # TODO clean this janky shit up
 
-
-with open(CONFIG_FILE) as stream:
-    try:
-        config = yaml.safe_load(stream)
-        NEXUS_MODS_API_KEY = config["nexus"]["api_key"]
-    except:
-        pass
-    
 def initialize(game):
     logging.info("Loading profile data")
 
