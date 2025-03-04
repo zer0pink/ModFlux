@@ -248,11 +248,10 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         )
 
         if reply == QMessageBox.Yes:
-            # Delete from database
+            # Delete this mod but not the version
             mod.delete_instance()
-            mod.version.delete_instance()
 
-            # TODO Delete from file system?
+            # TODO Re-order
 
             # Remove from model
             self._tableModel.removeMod(row)
