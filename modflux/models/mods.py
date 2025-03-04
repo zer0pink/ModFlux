@@ -58,20 +58,23 @@ class ModTableModel(QAbstractTableModel):
             return None
 
         if role == Qt.DisplayRole or role == Qt.EditRole:
-            row_data = self._data[index.row()]
+            rowData = self._data[index.row()]
 
             if index.column() == 0:
-                return str(row_data.name)
+                return str(rowData.name)
             if index.column() == 1:
-                return str(row_data.load_order)
+                return str(rowData.load_order)
             elif index.column() == 2:
-                return str(row_data.version.version)
+                return str(rowData.version.version)
             elif index.column() == 3:
-                return str(row_data.latest_version)
+                return str(rowData.latest_version)
             elif index.column() == 4:
-                return bool(row_data.active)
+                return bool(rowData.active)
             elif index.column() == 5:
-                return str(row_data.tags)
+                if rowData.tags:
+                    return str(rowData.tags)
+                else:
+                    return ""
 
         return None
 
