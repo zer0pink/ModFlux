@@ -193,7 +193,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         elif action == delete_action:
             self.deleteMod(index.row())
         elif action == toggle_action:
-            # Selection
+            # TODO Clean this up
             selectedIndexes = self.tableMods.selectionModel().selectedIndexes()
             logger.debug(selectedIndexes)
             if selectedIndexes and len(selectedIndexes) > 1:
@@ -279,7 +279,8 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                     self._tableModel.updateMod(i, mod)
                     break
 
-    def handleTableDoubleClick(self, index: QModelIndex):
+    def handleTableDoubleClick(self, tableIndex: QModelIndex):
+        index = self._proxyModel.mapToSource(tableIndex)
         if index.column() == 5:  # Tags column
             mod = self._tableModel.getMod(index.row())
             self.editTags(mod)
