@@ -124,5 +124,5 @@ class DownloadDialog(QDialog):
         self.url_input.setEnabled(True)
         self.progress_bar.hide()
 
-    def get_nexus_download(self):
+    def getNexusDownload(self):
         return self.nexus_download
