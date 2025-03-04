@@ -2,20 +2,16 @@ import os
 import pathlib
 import zipfile
 
-from peewee import fn
 import rarfile
 import py7zr
 from urllib.parse import parse_qs, unquote, urlparse
 import re
 from pathlib import Path
-from typing import List, Tuple
+from typing import Tuple
 
 from modflux import nexus
 from modflux.nexus import NexusDownload
-from modflux.db import Mod
-from modflux import config, db
-
-nmm = nexus.NexusModsAPI(api_key=config.NEXUS_MODS_API_KEY)
+from modflux import config
 
 
 def extract_mod_archive(filename: str) -> str:
@@ -63,11 +59,6 @@ def extract_mod_archive(filename: str) -> str:
     return archive_name
 
 
-def build_load_order() -> List[str]:
-    # Calculate the load order
-    print("test")
-
-
 def nxm_process(nxm: str) -> NexusDownload:
     """
     Process a NXM link and get a bunch of details about it
@@ -89,7 +80,7 @@ def nxm_process(nxm: str) -> NexusDownload:
     file_id = paths[4]
 
     # [{'name': 'Nexus Global Content Delivery Network', 'short_name': 'Nexus CDN', 'URI': 'https://supporter-files.nexus-cdn.com/3333/4198/ArchiveXL-4198-1-21-1-1737797101.zip?md5=GpfQ5USDsSRDPcOoCD_NYA&expires=1739817809&user_id=122332413'}]
-    result = nmm.get_mod_file_download_link(
+    result = nexus.getClient().get_mod_file_download_link(
         game_domain_name=game,
         mod_id=mod_id,
         file_id=file_id,
@@ -114,7 +105,9 @@ def nxm_process(nxm: str) -> NexusDownload:
     # Construct the full save path
     archive_path = os.path.join(config.DOWNLOAD_PATH, filename)
 
-    file_info = nmm.get_mod_file(game_domain_name=game, mod_id=mod_id, file_id=file_id)
+    file_info = nexus.getClient().get_mod_file(
+        game_domain_name=game, mod_id=mod_id, file_id=file_id
+    )
 
     return {
         "game": game,
@@ -149,24 +142,3 @@ def parse_filename(filename: str) -> Tuple[str, str, str, str]:
         published = match.group(4)
 
     return (name, id, version, published)
-
-
-def mod_latest(game: str, mod: Mod) -> str:
-    """
-    Return the latest
-    """
-    mod_info = nmm.get_mod_info(game_domain_name=game, mod_id=mod.nexus_mod_id)
-    mod.latest_version = mod_info["version"]
-    mod.save()
-
-    return mod_info["version"]
-
-
-def update_mods_latest_version():
-    mods = db.Mod.select(fn.Distinct(db.Mod.mod_id)).execute()
-
-    for mod in mods:
-        mod_latest("cyberpunk2077", mod.mod_id)
-
-def run_game():
-    sh.steam("steam://rungameid/1091500")

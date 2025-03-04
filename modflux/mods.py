@@ -145,3 +145,22 @@ def get_next_load_order() -> int:
         return 0
     else:
         return load_order + 1
+
+
+def mod_latest(game: str, mod: Mod) -> str:
+    """
+    Return the latest
+    """
+    pass
+    # mod_info = nmm.get_mod_info(game_domain_name=game, mod_id=mod.nexus_mod_id)
+    # mod.latest_version = mod_info["version"]
+    # mod.save()
+
+    # return mod_info["version"]
+
+
+def update_mods_latest_version():
+    mods = Mod.select(fn.Distinct(Mod.mod_id)).execute()
+
+    for mod in mods:
+        mod_latest(config.GAME.game_id, mod.mod_id)

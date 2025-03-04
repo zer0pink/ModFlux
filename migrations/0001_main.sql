@@ -1,5 +1,4 @@
 PRAGMA user_version=1;
-PRAGMA foreign_keys = ON;
 
 create table game (
     id integer primary key,

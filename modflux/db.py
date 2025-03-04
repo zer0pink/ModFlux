@@ -56,6 +56,13 @@ class Mod(BaseModel):
     game = ForeignKeyField(Game, backref="game_id")
 
 
+class Setting(BaseModel):
+    id = AutoField()
+
+    key = CharField(null=False)
+    value = CharField(null=True)
+
+
 migrate.run()
 
 db.connect()

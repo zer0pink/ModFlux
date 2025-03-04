@@ -28,7 +28,7 @@ import sh
 
 import modflux.config
 
-from modflux.db import Mod, ModVersion, Game
+from modflux.db import Mod, Game, Setting
 from modflux import mods
 
 from modflux.models.games import GameListModel
@@ -36,11 +36,30 @@ from modflux.models.mods import ModTableModel
 
 from modflux.ui.download import DownloadDialog
 from modflux.ui.game_settings import Ui_GameSettings
+from modflux.ui.settings import Ui_Settings
 from modflux.ui.games import Ui_Games
 from modflux.ui.tags import TagDialog
 
 
 logger = logging.getLogger("modflux")
+
+
+class SettingsDialog(Ui_Settings, QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setupUi(self)
+
+        settings = Setting.select()
+
+        for setting in settings:
+            if setting.key == 'nexus_api_key':
+                self.nexusAPIKeyLineEdit.setText(setting.value)
+
+    def accept(self):
+        Setting.replace(
+            key="nexus_api_key", value=self.nexusAPIKeyLineEdit.text().strip()
+        ).execute()
+        super().accept()
 
 
 class GamesDialog(Ui_Games, QDialog):
@@ -114,7 +133,9 @@ class GameSettingsDialog(Ui_GameSettings, QDialog):
         return True
 
     def selectDirectory(self):
-        path = QFileDialog.getExistingDirectory(self, "Select directory", QDir.currentPath())
+        path = QFileDialog.getExistingDirectory(
+            self, "Select directory", QDir.currentPath()
+        )
 
         if self.sender().objectName() == "gamePathBrowse":
             self.gamePathEdit.setPlainText(path)
@@ -181,6 +202,7 @@ class MainWindow(QMainWindow):
         self.button_download = QPushButton("Download")
         self.button_import = QPushButton("Import")
         self.button_profile = QPushButton("Profile")
+        self.button_settings = QPushButton("Settings")
         self.button_quit = QPushButton("Quit")
 
         self.button_quit.clicked.connect(self.quit)
@@ -188,10 +210,12 @@ class MainWindow(QMainWindow):
         self.button_download.clicked.connect(self.download)
         self.button_import.clicked.connect(self.import_mod)
         self.button_profile.clicked.connect(self.profile)
+        self.button_settings.clicked.connect(self.settings)
 
         button_layout.addWidget(self.button_activation)
         button_layout.addWidget(self.button_download)
         button_layout.addWidget(self.button_import)
+        button_layout.addWidget(self.button_settings)
         button_layout.addWidget(self.button_profile)
         button_layout.addWidget(self.button_quit)
 
@@ -220,6 +244,10 @@ class MainWindow(QMainWindow):
         # Handle nxm URL if provided
         if nxm_url:
             self.handle_nxm_url(nxm_url)
+
+    def settings(self):
+        settings = SettingsDialog(self)
+        settings.show()
 
     def profile(self):
         dialog = GameSettingsDialog(self)
@@ -376,8 +404,8 @@ class MainWindow(QMainWindow):
 
         if reply == QMessageBox.Yes:
             # Delete from database
-            mod.version.delete_instance()
             mod.delete_instance()
+            mod.version.delete_instance()
 
             # TODO Delete from file system?
 

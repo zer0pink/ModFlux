@@ -1,8 +1,15 @@
-modflux
+ModFlux
 ---
-This is an experimental linux mod manager for linux that utilizes fuse-overlayfs to emulate sort of how ModOrganizer2 works. 
+This is an experimental linux mod manager for linux that utilizes fuse-overlayfs to emulate sort of how ModOrganizer2 works. It will generate a mount of all your individual mods in place of
+your games directory, keeping and writes in a seperate overwrite directory.
 
-Originally starting out as just a simple script to build and mount the overlayfs I decided to expand it to add an actual UI since I had been wanting to learn QT for a long time.
+![Screenshot of ModFlux](.github/images/screenshot.png)
+
+Feature set is pretty basic at this point:
+
+- Supports Nexus integration for downloading mods and handling nxm:// urls
+- Supports multiple game profiles
+- Enable/Disable and re-order mods
 
 ## How it works
 By keeping each mod in it's own individual directory I generate a list of them with the base game directory at the bottom. I then mount that onto the games original directory and now when anything access files from the games directory it sees the merged overlayfs.

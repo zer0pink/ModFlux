@@ -2,6 +2,7 @@ import requests
 from typing import Optional, List, Dict, Union
 from dataclasses import dataclass
 from datetime import datetime
+from modflux.db import Setting
 
 @dataclass
 class NexusUser:
@@ -42,6 +43,8 @@ class NexusDownload:
     
     version: str
     published: int
+
+client = None
 
 class NexusModsAPI:
     BASE_URL = "https://api.nexusmods.com/v1"
@@ -263,3 +266,14 @@ class NexusModsAPI:
         """
         data = {"version": version} if version else None
         return self._make_request("POST", f"/games/{game_domain_name}/mods/{mod_id}/abstain.json", data=data)
+
+def getClient() -> NexusModsAPI:
+    global client
+
+    setting = Setting.get(Setting.key == 'nexus_api_key')
+
+    if setting and setting.value:
+        if client == None:
+            client = NexusModsAPI(api_key=setting.value)
+        return client
+    raise RuntimeError("Missing Nexus API Key")
