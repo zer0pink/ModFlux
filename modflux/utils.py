@@ -140,5 +140,6 @@ def parse_filename(filename: str) -> Tuple[str, str, str, str]:
         id = match.group(2)
         version = match.group(3)
         published = match.group(4)
-
-    return (name, id, version, published)
+        return (name, id, version, published)
+    
+    return (filename, None, None, None)
