@@ -8,73 +8,73 @@
 ## WARNING! All changes made in this file will be lost when recompiling UI file!
 ################################################################################
 
-from PySide6.QtCore import (QCoreApplication, QDate, QDateTime, QLocale,
-    QMetaObject, QObject, QPoint, QRect,
-    QSize, QTime, QUrl, Qt)
-from PySide6.QtGui import (QAction, QBrush, QColor, QConicalGradient,
-    QCursor, QFont, QFontDatabase, QGradient,
-    QIcon, QImage, QKeySequence, QLinearGradient,
-    QPainter, QPalette, QPixmap, QRadialGradient,
-    QTransform)
-from PySide6.QtWidgets import (QApplication, QHBoxLayout, QHeaderView, QLineEdit,
-    QMainWindow, QMenu, QMenuBar, QPushButton,
-    QSizePolicy, QStatusBar, QTableView, QVBoxLayout,
-    QWidget)
+from PySide6.QtCore import QCoreApplication, QMetaObject, QRect, Qt
+from PySide6.QtGui import QAction
+from PySide6.QtWidgets import (
+    QHBoxLayout,
+    QLineEdit,
+    QMenu,
+    QMenuBar,
+    QPushButton,
+    QStatusBar,
+    QTableView,
+    QVBoxLayout,
+    QWidget,
+)
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         if not MainWindow.objectName():
-            MainWindow.setObjectName(u"MainWindow")
+            MainWindow.setObjectName("MainWindow")
         MainWindow.resize(915, 909)
         self.actionExit = QAction(MainWindow)
-        self.actionExit.setObjectName(u"actionExit")
+        self.actionExit.setObjectName("actionExit")
         self.centralwidget = QWidget(MainWindow)
-        self.centralwidget.setObjectName(u"centralwidget")
+        self.centralwidget.setObjectName("centralwidget")
         self.horizontalLayout = QHBoxLayout(self.centralwidget)
-        self.horizontalLayout.setObjectName(u"horizontalLayout")
+        self.horizontalLayout.setObjectName("horizontalLayout")
         self.verticalLayout_2 = QVBoxLayout()
-        self.verticalLayout_2.setObjectName(u"verticalLayout_2")
+        self.verticalLayout_2.setObjectName("verticalLayout_2")
         self.filterModList = QLineEdit(self.centralwidget)
-        self.filterModList.setObjectName(u"filterModList")
+        self.filterModList.setObjectName("filterModList")
 
         self.verticalLayout_2.addWidget(self.filterModList)
 
         self.tableMods = QTableView(self.centralwidget)
-        self.tableMods.setObjectName(u"tableMods")
+        self.tableMods.setObjectName("tableMods")
         self.tableMods.setContextMenuPolicy(Qt.ContextMenuPolicy.CustomContextMenu)
 
         self.verticalLayout_2.addWidget(self.tableMods)
 
-
         self.horizontalLayout.addLayout(self.verticalLayout_2)
 
         self.verticalLayout = QVBoxLayout()
-        self.verticalLayout.setObjectName(u"verticalLayout")
+        self.verticalLayout.setObjectName("verticalLayout")
         self.buttonActivate = QPushButton(self.centralwidget)
-        self.buttonActivate.setObjectName(u"buttonActivate")
+        self.buttonActivate.setObjectName("buttonActivate")
 
         self.verticalLayout.addWidget(self.buttonActivate)
 
         self.buttonDownload = QPushButton(self.centralwidget)
-        self.buttonDownload.setObjectName(u"buttonDownload")
+        self.buttonDownload.setObjectName("buttonDownload")
 
         self.verticalLayout.addWidget(self.buttonDownload)
 
         self.buttonImport = QPushButton(self.centralwidget)
-        self.buttonImport.setObjectName(u"buttonImport")
+        self.buttonImport.setObjectName("buttonImport")
 
         self.verticalLayout.addWidget(self.buttonImport)
 
         self.buttonSettings = QPushButton(self.centralwidget)
-        self.buttonSettings.setObjectName(u"buttonSettings")
+        self.buttonSettings.setObjectName("buttonSettings")
 
         self.verticalLayout.addWidget(self.buttonSettings)
 
         self.buttonQuit = QPushButton(self.centralwidget)
-        self.buttonQuit.setObjectName(u"buttonQuit")
+        self.buttonQuit.setObjectName("buttonQuit")
 
         self.verticalLayout.addWidget(self.buttonQuit, 0, Qt.AlignmentFlag.AlignTop)
-
 
         self.horizontalLayout.addLayout(self.verticalLayout)
 
@@ -82,15 +82,15 @@ class Ui_MainWindow(object):
         self.horizontalLayout.setStretch(1, 20)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QMenuBar(MainWindow)
-        self.menubar.setObjectName(u"menubar")
+        self.menubar.setObjectName("menubar")
         self.menubar.setGeometry(QRect(0, 0, 915, 22))
         self.menuFile = QMenu(self.menubar)
-        self.menuFile.setObjectName(u"menuFile")
+        self.menuFile.setObjectName("menuFile")
         self.menuAbout = QMenu(self.menubar)
-        self.menuAbout.setObjectName(u"menuAbout")
+        self.menuAbout.setObjectName("menuAbout")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QStatusBar(MainWindow)
-        self.statusbar.setObjectName(u"statusbar")
+        self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
 
         self.menubar.addAction(self.menuFile.menuAction())
@@ -108,18 +108,31 @@ class Ui_MainWindow(object):
         self.filterModList.textEdited.connect(MainWindow.updateModListFilter)
 
         QMetaObject.connectSlotsByName(MainWindow)
+
     # setupUi
 
     def retranslateUi(self, MainWindow):
-        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
-        self.actionExit.setText(QCoreApplication.translate("MainWindow", u"Exit", None))
-        self.filterModList.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Filter...", None))
-        self.buttonActivate.setText(QCoreApplication.translate("MainWindow", u"Activate", None))
-        self.buttonDownload.setText(QCoreApplication.translate("MainWindow", u"Download", None))
-        self.buttonImport.setText(QCoreApplication.translate("MainWindow", u"Import", None))
-        self.buttonSettings.setText(QCoreApplication.translate("MainWindow", u"Settings", None))
-        self.buttonQuit.setText(QCoreApplication.translate("MainWindow", u"Quit", None))
-        self.menuFile.setTitle(QCoreApplication.translate("MainWindow", u"File", None))
-        self.menuAbout.setTitle(QCoreApplication.translate("MainWindow", u"About", None))
-    # retranslateUi
+        MainWindow.setWindowTitle(
+            QCoreApplication.translate("MainWindow", "MainWindow", None)
+        )
+        self.actionExit.setText(QCoreApplication.translate("MainWindow", "Exit", None))
+        self.filterModList.setPlaceholderText(
+            QCoreApplication.translate("MainWindow", "Filter...", None)
+        )
+        self.buttonActivate.setText(
+            QCoreApplication.translate("MainWindow", "Activate", None)
+        )
+        self.buttonDownload.setText(
+            QCoreApplication.translate("MainWindow", "Download", None)
+        )
+        self.buttonImport.setText(
+            QCoreApplication.translate("MainWindow", "Import", None)
+        )
+        self.buttonSettings.setText(
+            QCoreApplication.translate("MainWindow", "Settings", None)
+        )
+        self.buttonQuit.setText(QCoreApplication.translate("MainWindow", "Quit", None))
+        self.menuFile.setTitle(QCoreApplication.translate("MainWindow", "File", None))
+        self.menuAbout.setTitle(QCoreApplication.translate("MainWindow", "About", None))
 
+    # retranslateUi

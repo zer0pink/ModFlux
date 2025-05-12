@@ -1,13 +1,12 @@
 from PySide6.QtCore import Qt, QAbstractTableModel, QModelIndex
-from typing import List
 
 from modflux.db import Game
+
 
 class GameListModel(QAbstractTableModel):
     def __init__(self):
         super().__init__()
         self._data = list(Game.select())
-
 
     def rowCount(self, parent=QModelIndex()) -> int:
         return len(self._data)
@@ -29,7 +28,6 @@ class GameListModel(QAbstractTableModel):
         self.beginResetModel()
         self._data = list(Game.select())
         self.endResetModel()
-
 
     def getGame(self, row: int) -> Game:
         return self._data[row]

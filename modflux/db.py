@@ -1,10 +1,21 @@
-from peewee import *
-from modflux.config import DATABASE_FILE
+from peewee import (
+    SqliteDatabase,
+    Model,
+    AutoField,
+    CharField,
+    IntegerField,
+    ForeignKeyField,
+    BooleanField,
+)
+from xdg_base_dirs import xdg_config_home
 
 from modflux import migrate
 
 # Initialize database
-db = SqliteDatabase(DATABASE_FILE, pragmas={"foreign_keys": 1})
+db = SqliteDatabase(
+    f"{xdg_config_home()}/modflux/modflux.db", pragmas={"foreign_keys": 1}
+)
+db.connect()
 
 
 class BaseModel(Model):
@@ -63,6 +74,4 @@ class Setting(BaseModel):
     value = CharField(null=True)
 
 
-migrate.run()
-
-db.connect()
+migrate.run(conn=db)

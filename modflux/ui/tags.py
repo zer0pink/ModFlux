@@ -1,3 +1,6 @@
+from typing import Set
+
+from PySide6.QtCore import Qt
 from PySide6.QtWidgets import (
     QDialog,
     QVBoxLayout,
@@ -8,8 +11,6 @@ from PySide6.QtWidgets import (
     QListWidget,
     QListWidgetItem,
 )
-from PySide6.QtCore import Qt
-from typing import Set
 
 from modflux.db import Mod
 
@@ -20,7 +21,7 @@ class TagDialog(QDialog):
         self.setWindowTitle(f"Edit Tags - {mod.name}")
         self.setMinimumWidth(400)
         self.mod = mod
-        
+
         # Create layout
         layout = QVBoxLayout()
         self.setLayout(layout)
@@ -45,7 +46,7 @@ class TagDialog(QDialog):
         layout.addWidget(QLabel("Existing Tags:"))
         self.existing_tags = QListWidget()
         layout.addWidget(self.existing_tags)
-        
+
         # Load tags
         self.load_tags()
 
@@ -57,7 +58,7 @@ class TagDialog(QDialog):
         self.save_button.clicked.connect(self.accept)
         self.cancel_button = QPushButton("Cancel")
         self.cancel_button.clicked.connect(self.reject)
-        
+
         button_layout.addWidget(self.remove_button)
         button_layout.addStretch()
         button_layout.addWidget(self.save_button)
@@ -66,13 +67,13 @@ class TagDialog(QDialog):
 
         # Connect double-click on existing tags
         self.existing_tags.itemDoubleClicked.connect(self.add_existing_tag)
-        
+
         # Connect enter key in tag input
         self.tag_input.returnPressed.connect(self.add_tag)
 
     def load_tags(self):
         # Load current mod's tags
-        current_tags = set(self.mod.tags.split(',')) if self.mod.tags else set()
+        current_tags = set(self.mod.tags.split(",")) if self.mod.tags else set()
         for tag in sorted(current_tags):
             if tag:  # Skip empty tags
                 self.current_tags.addItem(tag)
@@ -81,11 +82,11 @@ class TagDialog(QDialog):
         existing_tags = set()
         for mod in Mod.select():
             if mod.tags:
-                existing_tags.update(mod.tags.split(','))
-        
+                existing_tags.update(mod.tags.split(","))
+
         # Remove current mod's tags from existing tags
         existing_tags.difference_update(current_tags)
-        
+
         # Add to list widget
         for tag in sorted(existing_tags):
             if tag:  # Skip empty tags
@@ -116,4 +117,4 @@ class TagDialog(QDialog):
         tags = set()
         for i in range(self.current_tags.count()):
             tags.add(self.current_tags.item(i).text())
-        return tags 
+        return tags

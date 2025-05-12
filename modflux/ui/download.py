@@ -1,3 +1,5 @@
+import httpx
+from PySide6.QtCore import Signal, QThread
 from PySide6.QtWidgets import (
     QDialog,
     QVBoxLayout,
@@ -7,9 +9,6 @@ from PySide6.QtWidgets import (
     QProgressBar,
     QLabel,
 )
-from PySide6.QtCore import Qt, Signal, QThread
-import httpx
-from pathlib import Path
 
 from modflux import utils
 
@@ -19,18 +18,18 @@ class DownloadWorker(QThread):
     finished = Signal(str)
     error = Signal(str)
 
-    def __init__(self, url: str, download_path: Path):
+    def __init__(self, url: str, download_path: str):
         super().__init__()
         self.url = url
         self.download_path = download_path
 
     def run(self):
         try:
-            with httpx.stream('GET', self.url) as response:
+            with httpx.stream("GET", self.url) as response:
                 response.raise_for_status()
-                total_size = int(response.headers.get('content-length', 0))
-                
-                with open(self.download_path, 'wb') as f:
+                total_size = int(response.headers.get("content-length", 0))
+
+                with open(self.download_path, "wb") as f:
                     if total_size == 0:  # No content length header
                         for chunk in response.iter_bytes():
                             f.write(chunk)
@@ -48,12 +47,15 @@ class DownloadWorker(QThread):
 
 
 class DownloadDialog(QDialog):
+    nexus_download = None
+    worker = None
+
     def __init__(self, parent=None):
         super().__init__(parent)
         self.setWindowTitle("Download Mod")
         self.setMinimumWidth(400)
         self.download_path = None
-        
+
         # Create layout
         layout = QVBoxLayout()
         self.setLayout(layout)
@@ -77,7 +79,7 @@ class DownloadDialog(QDialog):
         self.download_button.clicked.connect(self.start_download)
         self.cancel_button = QPushButton("Cancel")
         self.cancel_button.clicked.connect(self.reject)
-        
+
         button_layout.addWidget(self.download_button)
         button_layout.addWidget(self.cancel_button)
         layout.addLayout(button_layout)

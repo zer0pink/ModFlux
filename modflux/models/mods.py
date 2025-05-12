@@ -1,8 +1,7 @@
 from PySide6.QtCore import Qt, QAbstractTableModel, QModelIndex, QSortFilterProxyModel
-from typing import List
 
 from modflux import mods
-from modflux.db import Mod, ModVersion, Game
+from modflux.db import Mod
 
 
 class ModTableFilterModel(QSortFilterProxyModel):
@@ -24,6 +23,7 @@ class ModTableFilterModel(QSortFilterProxyModel):
             return True
 
         return pattern in str(nameData).casefold() or pattern in str(tagData).casefold()
+
 
 class ModTableModel(QAbstractTableModel):
     def __init__(self):

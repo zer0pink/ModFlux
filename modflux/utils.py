@@ -1,17 +1,17 @@
 import os
 import pathlib
-import zipfile
-
-import rarfile
-import py7zr
-from urllib.parse import parse_qs, unquote, urlparse
 import re
+import zipfile
 from pathlib import Path
 from typing import Tuple
+from urllib.parse import parse_qs, unquote, urlparse
 
-from modflux import nexus
-from modflux.nexus import NexusDownload
-from modflux import config
+import py7zr
+import rarfile
+
+from modflux.nexus.api import NexusModsAPI
+from modflux.nexus.models import NexusDownload
+from modflux.game_manager import GameManager
 
 
 def extract_mod_archive(filename: str) -> str:
@@ -20,7 +20,6 @@ def extract_mod_archive(filename: str) -> str:
 
     Args:
         filename: Path to the archive file (zip or rar)
-        managed_mods_dir: Base directory where mods should be extracted
 
     Returns:
         str: The full archive name without the extension
@@ -38,7 +37,7 @@ def extract_mod_archive(filename: str) -> str:
     archive_name = file_path.stem
 
     # Create the full path for the extraction directory
-    extract_dir = os.path.join(config.MANAGED_MOD_DIR, archive_name)
+    extract_dir = os.path.join(GameManager.get_instance().game.mod_path, archive_name)
 
     # Create the directory if it doesn't exist
     os.makedirs(extract_dir, exist_ok=True)
@@ -68,24 +67,24 @@ def nxm_process(nxm: str) -> NexusDownload:
     """
 
     # break down the URL
-    parsedUrl = urlparse(nxm)
-    query = parse_qs(parsedUrl.query)
+    parsed_url = urlparse(nxm)
+    query = parse_qs(parsed_url.query)
 
-    # Need to breakup the path
-    paths = parsedUrl.path.split("/")
+    # Need to break up the path
+    paths = parsed_url.path.split("/")
 
     # Get the important bits
-    game = parsedUrl.netloc
+    game = parsed_url.netloc
     mod_id = paths[2]
     file_id = paths[4]
 
     # [{'name': 'Nexus Global Content Delivery Network', 'short_name': 'Nexus CDN', 'URI': 'https://supporter-files.nexus-cdn.com/3333/4198/ArchiveXL-4198-1-21-1-1737797101.zip?md5=GpfQ5USDsSRDPcOoCD_NYA&expires=1739817809&user_id=122332413'}]
-    result = nexus.getClient().get_mod_file_download_link(
+    result = NexusModsAPI.get_instance().get_mod_file_download_link(
         game_domain_name=game,
-        mod_id=mod_id,
-        file_id=file_id,
+        mod_id=int(mod_id),
+        file_id=int(file_id),
         key=query["key"][0],
-        expires=query["expires"][0],
+        expires=int(query["expires"][0]),
     )
 
     # TODO Look at the API responses here and determine what else can come in
@@ -103,26 +102,26 @@ def nxm_process(nxm: str) -> NexusDownload:
     filename = unquote(filename)
 
     # Construct the full save path
-    archive_path = os.path.join(config.DOWNLOAD_PATH, filename)
+    archive_path = os.path.join(GameManager.get_instance().game.download_path, filename)
 
-    file_info = nexus.getClient().get_mod_file(
-        game_domain_name=game, mod_id=mod_id, file_id=file_id
+    file_info = NexusModsAPI.get_instance().get_mod_file(
+        game_domain_name=game, mod_id=int(mod_id), file_id=int(file_id)
     )
 
     return {
         "game": game,
-        "mod_id": mod_id,
-        "file_id": file_id,
+        "mod_id": int(mod_id),
+        "file_id": int(file_id),
         "download_url": url,
         "filename": filename,
         "name": pathlib.Path(filename).stem,
         "archive_path": archive_path,
-        "version": file_info["version"],
-        "published": file_info["uploaded_timestamp"],
+        "version": file_info['version'],
+        "published": file_info['uploaded_timestamp'],
     }
 
 
-def parse_filename(filename: str) -> Tuple[str, str, str, str]:
+def parse_filename(filename: str) -> Tuple[str, str | None, str | None, str | None]:
     """
     Parse filenames to extract mod name and version number into a dictionary.
 
@@ -140,6 +139,6 @@ def parse_filename(filename: str) -> Tuple[str, str, str, str]:
         id = match.group(2)
         version = match.group(3)
         published = match.group(4)
-        return (name, id, version, published)
-    
-    return (filename, None, None, None)
+        return name, id, version, published
+
+    return filename, None, None, None

@@ -1,3 +1,12 @@
+import logging
+import os
+import sys
+import webbrowser
+from pathlib import Path
+
+import sh
+from PySide6.QtCore import Qt, QModelIndex, QPoint, QTimer, QDir
+from PySide6.QtNetwork import QLocalServer, QLocalSocket
 from PySide6.QtWidgets import (
     QApplication,
     QMainWindow,
@@ -6,35 +15,21 @@ from PySide6.QtWidgets import (
     QMessageBox,
     QInputDialog,
 )
-from PySide6.QtCore import Qt, QModelIndex, QPoint, QTimer, QDir
 from PySide6.QtWidgets import QFileDialog
-from PySide6.QtNetwork import QLocalServer, QLocalSocket
 
-import os
-from pathlib import Path
-import webbrowser
-import logging
-import sys
-import sh
-
-import modflux.config
-
-from modflux.db import Mod, Game, Setting
 from modflux import mods
-from modflux import config
-
+from modflux.db import Mod, Game, Setting
+from modflux.game_manager import GameManager
 from modflux.models.games import GameListModel
 from modflux.models.mods import ModTableModel, ModTableFilterModel
-
+from modflux.ui.download import DownloadDialog
 from modflux.ui.game_settings import Ui_GameSettings
-from modflux.ui.settings import Ui_Settings
 from modflux.ui.games import Ui_Games
 from modflux.ui.main import Ui_MainWindow
+from modflux.ui.settings import Ui_Settings
 
 # Bless me father for I have sinned.. These are AI generated
 from modflux.ui.tags import TagDialog
-from modflux.ui.download import DownloadDialog
-
 
 logger = logging.getLogger("modflux")
 
@@ -58,6 +53,9 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         # Setup local server for single instance communication
         self.server = QLocalServer(self)
         self.server.newConnection.connect(self.handleNewConnection)
+
+        #
+        self._gameManager = GameManager.get_instance()
 
         # Check to see if its a mount
         if mods.is_active():
@@ -83,6 +81,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
                     "There was a problem unmounting the game directory",
                 )
         else:
+            mods.link()
             if mods.mount():
                 self.buttonActivate.setText("Deactivate")
             else:
@@ -97,16 +96,16 @@ class MainWindow(Ui_MainWindow, QMainWindow):
             self,
             "Quit",
             "Are you sure you want to quit?",
-            QMessageBox.Yes | QMessageBox.No,
-            QMessageBox.No,
+            QMessageBox.StandardButton.Yes | QMessageBox.StandardButton.No,
+            QMessageBox.StandardButton.No,
         )
 
-        if reply == QMessageBox.Yes:
+        if reply == QMessageBox.StandardButton.Yes:
             exit(0)
 
     def download(self):
         dialog = DownloadDialog(self)
-        if dialog.exec() == QDialog.Accepted:
+        if dialog.exec() == QDialog.DialogCode.Accepted:
             nexusDownload = dialog.getNexusDownload()
             if nexusDownload:
                 mod = mods.process_download(nexusDownload)
@@ -142,7 +141,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
         settings.show()
 
     def game(self):
-        dialog = GameSettingsDialog(self, config.GAME)
+        dialog = GameSettingsDialog(self, self._gameManager.game)
         dialog.exec()
 
     def refreshTableData(self):
@@ -160,7 +159,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
 
         # Map from proxy index
         index = self._proxyModel.mapToSource(tableIndex)
-        
+
         mod = self._tableModel.getMod(index.row())
         menu = QMenu(self)
 
@@ -213,7 +212,7 @@ class MainWindow(Ui_MainWindow, QMainWindow):
 
     def browseMod(self, mod: Mod):
         sh.xdg_open(
-            os.path.join(modflux.config.MANAGED_MOD_DIR, mod.version.path), _bg=True
+            os.path.join(self._gameManager.game.mod_path, mod.version.path), _bg=True
         )
 
     def moveModToPosition(self, from_index: int, to_index: int):
@@ -444,7 +443,7 @@ def sendURLtoRunningInstance(url: str) -> bool:
     return False
 
 
-def appMain():
+def start():
     logging.basicConfig(level=logging.DEBUG)
 
     app = QApplication(sys.argv)
@@ -465,10 +464,10 @@ def appMain():
 
     # TODO Allow setting a default game
     selectGame = GamesDialog()
-    if selectGame.exec() == QDialog.Accepted:
+    if selectGame.exec() == QDialog.DialogCode.Accepted:
         game = selectGame.getGame()
         logging.info(f"loading profile {game.name}")
-        modflux.config.initialize(game)
+        GameManager(game)
 
         window = MainWindow(nxmUrl)
         window.show()
@@ -479,4 +478,4 @@ def appMain():
 
 
 if __name__ == "__main__":
-    sys.exit(appMain())
+    sys.exit(start())
