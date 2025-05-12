@@ -20,12 +20,12 @@ HARDLINK_STAGING_DIR = "/mnt/games2/cyberpunk/staging"
 
 def process_download(nexus_download: NexusDownload):
     """Process a completed download"""
-    mod_path = utils.extract_mod_archive(nexus_download.archive_path)
+    mod_path = utils.extract_mod_archive(nexus_download["archive_path"])
 
     version = ModVersion.create(
-        nexus_mod_id=nexus_download.mod_id,
-        nexus_file_id=nexus_download.file_id,
-        version=nexus_download.version,
+        nexus_mod_id=nexus_download["mod_id"],
+        nexus_file_id=nexus_download["file_id"],
+        version=nexus_download["version"],
         path=mod_path,
         game_id=_game().id,
     )
@@ -33,9 +33,9 @@ def process_download(nexus_download: NexusDownload):
     load_order = get_next_load_order()
 
     mod = Mod.create(
-        name=nexus_download.name,
+        name=nexus_download["name"],
         load_order=load_order,
-        nexus_mod_id=nexus_download.mod_id,
+        nexus_mod_id=nexus_download["mod_id"],
         version=version,
         active=True,
         game_id=_game().id,

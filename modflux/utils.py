@@ -116,8 +116,8 @@ def nxm_process(nxm: str) -> NexusDownload:
         "filename": filename,
         "name": pathlib.Path(filename).stem,
         "archive_path": archive_path,
-        "version": file_info['version'],
-        "published": file_info['uploaded_timestamp'],
+        "version": file_info["version"],
+        "published": file_info["uploaded_timestamp"],
     }
 
 
